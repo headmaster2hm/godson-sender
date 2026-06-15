@@ -1,4 +1,4 @@
-# Pivotal Sender
+# Godson Sender
 
 Email sender dashboard built with Next.js and [Resend](https://resend.com).
 
@@ -21,12 +21,12 @@ npm install
 
 ```env
 RESEND_API_KEY=re_your_api_key_here
-ALLOWED_FROM_DOMAIN=pivotalphilanthropyprogram.com
-NEXT_PUBLIC_DEFAULT_FROM_EMAIL=contactus@pivotalphilanthropyprogram.com
-NEXT_PUBLIC_ALLOWED_FROM_DOMAIN=pivotalphilanthropyprogram.com
+ALLOWED_FROM_DOMAIN=yourdomain.com
+NEXT_PUBLIC_DEFAULT_FROM_EMAIL=contact@yourdomain.com
+NEXT_PUBLIC_ALLOWED_FROM_DOMAIN=yourdomain.com
 ```
 
-Only `@pivotalphilanthropyprogram.com` addresses are accepted in the From field. Any other domain is rejected by the API.
+Only addresses on the configured domain are accepted in the From field. Any other domain is rejected by the API.
 
 3. Start the dev server:
 
