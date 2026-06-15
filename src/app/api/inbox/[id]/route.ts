@@ -9,7 +9,7 @@ import {
 } from "@/lib/email-utils";
 import { markInboxEmailDeleted } from "@/lib/inbox-deleted";
 import { replySubject } from "@/lib/inbox";
-import { getResendClient } from "@/lib/resend";
+import { formatResendError, getResendClient } from "@/lib/resend";
 
 export const runtime = "nodejs";
 
@@ -22,7 +22,10 @@ async function getAuthorizedEmail(id: string) {
   const { data, error } = await resend.emails.receiving.get(id);
 
   if (error) {
-    return { error: error.message, status: 422 as const };
+    return {
+      error: formatResendError(error.message, "receiving"),
+      status: 422 as const,
+    };
   }
 
   if (!data) {

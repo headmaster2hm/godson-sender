@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { matchesAllowedDomainList } from "@/lib/email-utils";
 import type { InboxItem } from "@/lib/inbox";
 import { getDeletedInboxIds } from "@/lib/inbox-deleted";
-import { getResendClient } from "@/lib/resend";
+import { formatResendError, getResendClient } from "@/lib/resend";
 
 export const runtime = "nodejs";
 
@@ -35,7 +35,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 422 });
+      return NextResponse.json(
+        { error: formatResendError(error.message, "receiving") },
+        { status: 422 },
+      );
     }
 
     const allowedDomain = process.env.ALLOWED_FROM_DOMAIN?.trim().toLowerCase() || "";
