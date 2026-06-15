@@ -33,8 +33,15 @@ export function formatFromAddress(name: string, email: string): string {
   return `${trimmedName} <${trimmedEmail}>`;
 }
 
+export function parseEmailAddress(value: string): string {
+  const angleMatch = value.match(/<([^>]+)>/);
+  if (angleMatch) return angleMatch[1].trim();
+  return value.trim();
+}
+
 export function getEmailDomain(email: string): string | null {
-  const match = email.trim().toLowerCase().match(/^[^\s@]+@([^\s@]+)$/);
+  const parsed = parseEmailAddress(email);
+  const match = parsed.toLowerCase().match(/^[^\s@]+@([^\s@]+)$/);
   return match ? match[1] : null;
 }
 
