@@ -1,8 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eceef2;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #f4f4f5;
+  --surface-elevated: #ffffff;
+  --accent: #3b5bdb;
+  --accent-hover: #364fc7;
+  --accent-glow: rgba(59, 91, 219, 0.25);
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #a1a1aa;
+  --border: #e4e4e7;
+  --input-bg: #f4f4f5;
+  --input-focus-bg: #ffffff;
+  --footer-bg: rgba(244, 244, 245, 0.8);
+  --dropzone-bg: rgba(244, 244, 245, 0.5);
+  --dropzone-border: #e4e4e7;
+  --dropzone-hover-bg: rgba(59, 91, 219, 0.06);
+  --panel-bg: #f4f4f5;
+  --card-shadow: rgba(161, 161, 170, 0.4);
+  --toolbar-divider: #d4d4d8;
+  --toolbar-active-bg: #ffffff;
+  --toolbar-hover-bg: rgba(255, 255, 255, 0.7);
+  --placeholder: #a1a1aa;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --success-text: #065f46;
+  --success-subtext: #059669;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --error-text: #b91c1c;
+  --html-bg: #18181b;
+  --html-text: #6ee7b7;
+  --toggle-track: #f4f4f5;
+}
+
+html.dark {
+  --background: #08080f;
+  --foreground: #e4e4e7;
+  --card: #111118;
+  --surface: #16161f;
+  --surface-hover: #1c1c28;
+  --surface-elevated: #1e1e2a;
+  --accent: #748ffc;
+  --accent-hover: #91a7ff;
+  --accent-glow: rgba(116, 143, 252, 0.35);
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border: #2a2a3a;
+  --input-bg: #1a1a26;
+  --input-focus-bg: #1e1e2c;
+  --footer-bg: rgba(14, 14, 20, 0.9);
+  --dropzone-bg: rgba(26, 26, 38, 0.6);
+  --dropzone-border: #2a2a3a;
+  --dropzone-hover-bg: rgba(116, 143, 252, 0.08);
+  --panel-bg: #14141e;
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --toolbar-divider: #3f3f50;
+  --toolbar-active-bg: #2a2a3c;
+  --toolbar-hover-bg: rgba(42, 42, 60, 0.7);
+  --placeholder: #52525b;
+  --success-bg: rgba(6, 78, 59, 0.25);
+  --success-border: rgba(52, 211, 153, 0.3);
+  --success-text: #6ee7b7;
+  --success-subtext: #34d399;
+  --error-bg: rgba(127, 29, 29, 0.25);
+  --error-border: rgba(248, 113, 113, 0.3);
+  --error-text: #fca5a5;
+  --html-bg: #050508;
+  --html-text: #86efac;
+  --toggle-track: #1a1a26;
 }
 
 @theme inline {
@@ -12,15 +83,97 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.page-bg {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(59, 91, 219, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 80% 90%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+  transition: background-color 0.3s ease;
+}
+
+html.dark .page-bg {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(116, 143, 252, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 10% 60%, rgba(59, 130, 246, 0.06) 0%, transparent 35%);
+}
+
+.compose-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: 0 25px 50px -12px var(--card-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+html.dark .compose-card {
+  border-color: rgba(116, 143, 252, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(116, 143, 252, 0.06),
+    0 25px 50px -12px var(--card-shadow),
+    0 0 80px -20px var(--accent-glow);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html.dark .theme-toggle-thumb {
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* TipTap editor */
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--placeholder);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding-left: 1.25rem;
+}
+
+.tiptap ul {
+  list-style-type: disc;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+}
+
+.tiptap h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.tiptap h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.tiptap p,
+.tiptap li {
+  color: var(--text-primary);
+}
+
+.tiptap a {
+  color: var(--accent);
+  text-decoration: underline;
 }
