@@ -1,13 +1,34 @@
 import { promises as fs } from "fs";
 import path from "path";
 
+let memoryDeletedIds: Set<string> | null = null;
+
+function isServerlessRuntime(): boolean {
+  const cwd = process.cwd();
+
+  return Boolean(
+    process.env.VERCEL ||
+      process.env.VERCEL_ENV ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      cwd === "/var/task" ||
+      cwd.startsWith("/var/task/"),
+  );
+}
+
+function getMemoryStore(): Set<string> {
+  if (!memoryDeletedIds) {
+    memoryDeletedIds = new Set();
+  }
+
+  return memoryDeletedIds;
+}
+
 function getDataDir(): string {
   if (process.env.INBOX_DATA_DIR?.trim()) {
     return process.env.INBOX_DATA_DIR.trim();
   }
 
-  // Vercel/Lambda only allow writes under /tmp, not the project directory.
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  if (isServerlessRuntime()) {
     return path.join("/tmp", "maildesk-data");
   }
 
@@ -18,7 +39,7 @@ function getDeletedFile(): string {
   return path.join(getDataDir(), "inbox-deleted.json");
 }
 
-async function ensureStore(): Promise<string[]> {
+async function readFileStore(): Promise<string[]> {
   const deletedFile = getDeletedFile();
 
   try {
@@ -33,21 +54,33 @@ async function ensureStore(): Promise<string[]> {
   }
 }
 
-export async function getDeletedInboxIds(): Promise<Set<string>> {
-  const ids = await ensureStore();
-  return new Set(ids);
-}
-
-export async function markInboxEmailDeleted(id: string): Promise<void> {
+async function writeFileStore(ids: string[]): Promise<void> {
   const deletedFile = getDeletedFile();
 
   try {
-    const ids = await ensureStore();
-    if (!ids.includes(id)) {
-      ids.push(id);
-      await fs.writeFile(deletedFile, JSON.stringify(ids, null, 2), "utf8");
-    }
+    await fs.mkdir(getDataDir(), { recursive: true });
+    await fs.writeFile(deletedFile, JSON.stringify(ids, null, 2), "utf8");
   } catch {
-    // Inbox still works if local delete state cannot be persisted.
+    // Ignore write failures on read-only filesystems.
+  }
+}
+
+export async function getDeletedInboxIds(): Promise<Set<string>> {
+  if (isServerlessRuntime()) {
+    return new Set(getMemoryStore());
+  }
+
+  return new Set(await readFileStore());
+}
+
+export async function markInboxEmailDeleted(id: string): Promise<void> {
+  if (isServerlessRuntime()) {
+    getMemoryStore().add(id);
+    return;
+  }
+
+  const ids = await readFileStore();
+  if (!ids.includes(id)) {
+    await writeFileStore([...ids, id]);
   }
 }
